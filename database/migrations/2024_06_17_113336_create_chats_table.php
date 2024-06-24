@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('service_id');
             $table->foreignId('user_id');
+            $table->foreignId('owner');
         });
     }
 

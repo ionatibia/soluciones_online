@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'username' => 'SuperAdmin',
             'email' => 'admin@admin.com',
             'role' => 'admin',
+            'avatar' => '/assets/avatars/admin.jpg',
             'password' => Hash::make('12345678')
         ]);
     }
