@@ -8,11 +8,29 @@
                     <div class="card-header">{{ __('Register') }}</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('register') }}">
+                        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="row mb-3">
-                                <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
+                                <label for="username"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Username') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="username" type="text"
+                                        class="form-control @error('username') is-invalid @enderror" name="username"
+                                        value="{{ old('username') }}" required autocomplete="username" autofocus>
+
+                                    @error('username')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="name"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
 
                                 <div class="col-md-6">
                                     <input id="name" type="text"
@@ -87,8 +105,22 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-0">
-                                <div class="col-md-6 offset-md-4">
+                            <div class="row mb-3">
+                                <label for="avatar"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Avatar') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="avatar" type="file" class="form-control" name="avatar" required
+                                        onchange="previewImg(this)">
+                                </div>
+                            </div>
+                            <div class="mb-3 text-center">
+                                <img class="rounded-circle" id="preview" width="100" height="100"
+                                    src="{{ '/assets/avatars/default.jpg' }}" alt="">
+                            </div>
+
+                            <div class="row mb-0 text-center">
+                                <div class="col-md-6 offset-md-3">
                                     <button type="submit" class="btn btn-primary">
                                         {{ __('Register') }}
                                     </button>
@@ -101,3 +133,18 @@
         </div>
     </div>
 @endsection
+
+<script>
+    function previewImg(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                let elem = document.getElementById('preview');
+                console.log(elem);
+                elem.src = e.target.result;
+                elem.with = '100px';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
