@@ -1,24 +1,32 @@
 @extends('layouts.app')
 
 @section('content')
+    <service-form></service-form>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header">{{ __('Dashboard') }}</div>
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ __('Services') }}
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#createServiceModal">
+                                    <i class="bi bi-plus-circle-fill h3"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
-                            </div>
+                        @if (Route::current()->getName())
+                            <services :onlymine="false"></services>
                         @endif
 
-                        {{ __('You are logged in!') }}
                     </div>
                 </div>
-                <img class="rounded-circle" width="100" height="100" src="{{ URL::to(Auth::user()->avatar) }}"
-                    alt="">
             </div>
         </div>
     </div>

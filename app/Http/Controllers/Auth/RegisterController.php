@@ -54,7 +54,7 @@ class RegisterController extends Controller
             'surname' => ['required', 'string', 'min:3', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            /* 'avatar' => ['required', 'image', 'mimes:png,jpg,jpeg', 'max:2048'] */
+            'avatar' => ['image', 'max:2048']
         ]);
     }
 
@@ -66,8 +66,13 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $imageName = $data['username'] . $data['avatar']->file('avatar')->extension();
-        $data['avatar']->move(public_path('assets/avatars'), $imageName);
+        if (array_key_exists('avatar', $data)) {
+            $imageName = $data['username'] . '.' . $data['avatar']->getClientOriginalExtension();
+            $data['avatar']->move(public_path('assets/avatars'), $imageName);
+        } else {
+            $imageName = 'default.jpg';
+        }
+
         return User::create([
             'username' => $data['username'],
             'name' => $data['name'],
