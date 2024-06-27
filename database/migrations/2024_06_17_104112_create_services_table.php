@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->text('name');
+            $table->text('title');
             $table->text('description');
             $table->string('img_src');
             $table->foreignId('user_id');
+            $table->boolean('is_published');
         });
     }
 

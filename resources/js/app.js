@@ -15,9 +15,7 @@ import { createApp } from 'vue';
 
 const app = createApp({});
 
-import CreateServiceComponent from './components/ServiceForm.vue';
 import ServicesComponent from './components/Services.vue';
-app.component('service-form', CreateServiceComponent);
 app.component('services',ServicesComponent);
 
 /**
