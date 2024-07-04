@@ -19,7 +19,7 @@
                     </div>
 
                     <div class="card-body">
-                        <services :onlymine="false"></services>
+                        <services :onlymine="true"></services>
                     </div>
                 </div>
             </div>

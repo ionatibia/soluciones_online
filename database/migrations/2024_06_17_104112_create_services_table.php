@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('img_src');
             $table->foreignId('user_id');
             $table->boolean('is_published');
+            $table->float('price');
         });
     }
 

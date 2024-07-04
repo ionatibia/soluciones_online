@@ -82,9 +82,10 @@ class ServiceController extends Controller
             'description' => $request->description,
             'user_id' => auth()->id(),
             'img_src' => '/assets/services/' . $imageName,
-            'is_published' => (int)$request->is_published
+            'is_published' => $request->has('is_published') ? 1 : 0,
+            'price' => $request->price
         ]);
-        return view('home');
+        return redirect(route('home'))->with('success', 'Service Created!!!');
     }
 
     /**
@@ -100,7 +101,8 @@ class ServiceController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $service = Service::where('id', $id)->first();
+        return view('services.edit', compact('service'));
     }
 
     /**
@@ -108,7 +110,22 @@ class ServiceController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $service = Service::where('id', $id)->first();
+        if ($request->image) {
+            $imageName = '/assets/services/' . auth()->user()->username . '.' . $request->image->getClientOriginalExtension();
+            $request->image->move(public_path('assets/services'), $imageName);
+        } else {
+            $imageName = $service->img_src;
+        }
+        $service->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'user_id' => auth()->id(),
+            'img_src' => $imageName,
+            'is_published' => $request->has('is_published') ? 1 : 0,
+            'price' => $request->price
+        ]);
+        return redirect(route('home'))->with('success', 'Service Updated!!!');
     }
 
     /**
@@ -116,6 +133,10 @@ class ServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $service = Service::where('id', $id)->first();
+        if ($service != null) {
+            $service->delete();
+        }
+        return response()->noContent();
     }
 }

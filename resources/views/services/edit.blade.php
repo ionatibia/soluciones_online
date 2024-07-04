@@ -5,10 +5,12 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">{{ __('Create Service') }}</div>
+                    <div class="card-header">{{ __('Edit Service') }}</div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('service.store') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('service.update', $service->id) }}"
+                            enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
                             {{-- Title --}}
                             <div class="row mb-3">
                                 <label for="title"
@@ -17,7 +19,7 @@
                                 <div class="col-md-6">
                                     <input id="title" type="text"
                                         class="form-control @error('title') is-invalid @enderror" name="title"
-                                        value="{{ old('title') }}" required autocomplete="title" autofocus>
+                                        value="{{ $service->title }}" required autocomplete="title" autofocus>
 
                                     @error('title')
                                         <span class="invalid-feedback" role="alert">
@@ -33,7 +35,7 @@
 
                                 <div class="col-md-6">
                                     <textarea id="description" type="text" class="form-control @error('description') is-invalid @enderror"
-                                        name="description" value="{{ old('description') }}" required autocomplete="description" autofocus rows="6"></textarea>
+                                        name="description" value="{{ $service->description }}" required autocomplete="description" autofocus rows="6"></textarea>
 
                                     @error('description')
                                         <span class="invalid-feedback" role="alert">
@@ -63,8 +65,8 @@
                                     class="col-md-4 col-form-label text-md-end">{{ __('Preview') }}</label>
                                 <div class="col-md-6">
                                     <div id="previewImage" class="mb-3 text-center">
-                                        <img id="preview" width="400" height="200"
-                                            src="{{ '/assets/services/default.webp' }}" alt="">
+                                        <img id="preview" width="400" height="200" src="{{ $service->img_src }}"
+                                            alt="">
                                     </div>
                                 </div>
                             </div>
@@ -79,7 +81,7 @@
                                     <div class="input-group">
                                         <input id="price" type="number"
                                             class="form-control @error('price') is-invalid @enderror" name="price"
-                                            value="{{ old('price') }}" required autocomplete="price" autofocus
+                                            value="{{ $service->price }}" required autocomplete="price" autofocus
                                             step="0.01">
                                         <div class="input-group-append">
                                             <span class="input-group-text">$</span>
@@ -100,7 +102,8 @@
 
                                 <div class="col-md-6  form-check form-switch">
                                     <input id="is_published" type="checkbox" class="form-check-input" name="is_published"
-                                        style="transform: scale(1.8);margin-top:10px;margin-left:10px">
+                                        style="transform: scale(1.8);margin-top:10px;margin-left:10px"
+                                        @if ($service->is_published) checked @endif>
                                     @error('is_published')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -117,7 +120,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <button type="submit" class="btn btn-primary btn-lg" style="width:150px">
-                                        {{ __('Create') }}
+                                        {{ __('Update') }}
                                     </button>
                                 </div>
                             </div>
