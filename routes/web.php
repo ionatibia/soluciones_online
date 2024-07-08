@@ -9,7 +9,9 @@ Auth::routes();
 Route::get('/', function () {
     return redirect(route('home'));
 });
-Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+Route::get('/services', [ServiceController::class, 'services'])->name('services.index');
+Route::get('/services/list', [ServiceController::class, 'getServices'])->name('services.list');
+Route::get('/services/detail/{service}', [ServiceController::class, 'show'])->name('service.detail');
 Route::get('/home', [ServiceController::class, 'home'])->name('home');
 Route::get('/home/services', [ServiceController::class, 'getMyServices'])->name('myServices');
 Route::get('/home/create', [ServiceController::class, 'create'])->name('service.create');

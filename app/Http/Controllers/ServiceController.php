@@ -24,10 +24,15 @@ class ServiceController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function services()
     {
-        $services = Service::where('is_published', 1)->paginate(10);
-        return view('service.index', compact($services));
+        return view('services.index');
+    }
+
+    public function getServices()
+    {
+        $services = Service::where('is_published', 1)->paginate(6);
+        return response()->json($services);
     }
 
     /**
@@ -47,7 +52,7 @@ class ServiceController extends Controller
      */
     public function getMyServices(): JsonResponse
     {
-        $services = Service::where('user_id', auth()->id())->paginate(10);
+        $services = Service::where('user_id', auth()->id())->paginate(6);
         return response()->json($services);
     }
 
@@ -93,7 +98,8 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $service = Service::where('id', $id)->first();
+        return view('services.detail', compact('service'));
     }
 
     /**
