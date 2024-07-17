@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chat;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use Illuminate\Http\JsonResponse;
@@ -99,6 +100,13 @@ class ServiceController extends Controller
     public function show(string $id)
     {
         $service = Service::where('id', $id)->first();
+        if (auth()->id() === $service->user_id) {
+            $chats = Chat::where('service_id', $service->id)->get();
+        } else {
+            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->orWhere('owner', auth()->id())->first();
+        }
+        foreach ($chats as $chat) {
+        }
         return view('services.detail', compact('service'));
     }
 
