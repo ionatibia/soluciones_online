@@ -16,7 +16,9 @@ import { createApp } from 'vue';
 const app = createApp({});
 
 import ServicesComponent from './components/Services.vue';
+import ChatsComponent from './components/Chats.vue';
 app.component('services',ServicesComponent);
+app.component('chats',ChatsComponent);
 
 /**
  * The following block of code may be used to automatically register your

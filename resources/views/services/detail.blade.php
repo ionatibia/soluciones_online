@@ -57,7 +57,17 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                @if (Auth::user()->id === $service->user_id)
+                                @else
+                                    <chats :chats="{{ $chats->all() }}" :service="{{ $service }}"
+                                        :user="{{ Auth::user() }}">
 
+                                    </chats>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

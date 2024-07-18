@@ -19,3 +19,5 @@ Route::post('/home/store', [ServiceController::class, 'store'])->name('service.s
 Route::get('/home/edit/{service}', [ServiceController::class, 'edit'])->name('service.edit');
 Route::put('/home/update/{service}', [ServiceController::class, 'update'])->name('service.update');
 Route::delete('/home/destroy/{service}', [ServiceController::class, 'destroy'])->name('service.destroy');
+Route::get('/messages/{id}', [ServiceController::class, 'messages'])->name('messages');
+Route::post('/message', [ServiceController::class, 'message'])->name('message');

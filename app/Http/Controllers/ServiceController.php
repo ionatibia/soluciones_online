@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 use App\Models\Service;
+use App\Models\User;
+use App\Models\Message;
+use App\Jobs\SendMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
@@ -77,7 +80,7 @@ class ServiceController extends Controller
             'is_published' => ['required']
         ]); */
         if ($request->image) {
-            $imageName = auth()->user()->username . '.' . $request->image->getClientOriginalExtension();
+            $imageName = auth()->user()->username . '_' . $request->title . '.' . $request->image->getClientOriginalExtension();
             $request->image->move(public_path('assets/services'), $imageName);
         } else {
             $imageName = 'default.webp';
@@ -100,14 +103,27 @@ class ServiceController extends Controller
     public function show(string $id)
     {
         $service = Service::where('id', $id)->first();
-        if (auth()->id() === $service->user_id) {
+
+        if (auth()->id() === $service->owner) {
             $chats = Chat::where('service_id', $service->id)->get();
         } else {
-            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->orWhere('owner', auth()->id())->first();
+            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->first();
         }
-        foreach ($chats as $chat) {
+        if ($chats) {
+            foreach ($chats->all() as $chat) {
+                $user = User::where('id', $service->user_id)->first();
+                $owner = User::where('id', $service->owner)->first();
+                $chat->user_obj = $user;
+                $chat->owner_obj = $owner;
+            }
+        } else {
+            $chats = [];
         }
-        return view('services.detail', compact('service'));
+
+        return view('services.detail', [
+            'service' => $service,
+            'chats' => $chats
+        ]);
     }
 
     /**
@@ -152,5 +168,46 @@ class ServiceController extends Controller
             $service->delete();
         }
         return response()->noContent();
+    }
+
+    public function messages($id): JsonResponse
+    {
+        $chat = Chat::find($id)->first();
+
+        $messages =  Message::where('chat_id', $chat->id)->paginate(6);
+        dd($messages);
+
+        return response()->json($messages);
+    }
+
+    public function message(Request $request): JsonResponse
+    {
+        $chat_id = $request->get('chat_id');
+        if ($chat_id === null) {
+            $service = Service::where('id', $request->get('service_id'))->first();
+            $chat = Chat::create([
+                'service_id' => $service->id,
+                'owner' => $request->get('to'),
+                'user_id' => auth()->id()
+            ]);
+            $chat_id = $chat->id;
+        } else {
+            $chat = Chat::where('id', $chat_id);
+        }
+        $message = Message::create([
+            'chat_id' => $chat_id,
+            'text' => $request->get('text'),
+            'to' => $request->get('to'),
+            'from' => auth()->id(),
+            'read' => false
+        ]);
+        $message->servicio_id = 1;
+        SendMessage::dispatch($message);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Message created and job dispatched.",
+            'chat' => $chat
+        ]);
     }
 }
