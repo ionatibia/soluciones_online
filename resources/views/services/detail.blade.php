@@ -61,10 +61,9 @@
                             <div class="col-md-12 text-center">
                                 @if (Auth::user()->id === $service->user_id)
                                 @else
-                                    <chats :chats="{{ $chats->all() }}" :service="{{ $service }}"
+                                    <chat :chat="{{ $chats[0] }}" :service="{{ $service }}"
                                         :user="{{ Auth::user() }}">
-
-                                    </chats>
+                                    </chat>
                                 @endif
                             </div>
                         </div>

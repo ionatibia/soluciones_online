@@ -107,17 +107,18 @@ class ServiceController extends Controller
         if (auth()->id() === $service->owner) {
             $chats = Chat::where('service_id', $service->id)->get();
         } else {
-            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->first();
+            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->get();
         }
+
         if ($chats) {
             foreach ($chats->all() as $chat) {
-                $user = User::where('id', $service->user_id)->first();
-                $owner = User::where('id', $service->owner)->first();
+                $user = User::where('id', $chat->user_id)->first();
+                $owner = User::where('id', $chat->owner)->first();
                 $chat->user_obj = $user;
                 $chat->owner_obj = $owner;
             }
         } else {
-            $chats = [];
+            $chats = [null];
         }
 
         return view('services.detail', [
@@ -174,9 +175,7 @@ class ServiceController extends Controller
     {
         $chat = Chat::find($id)->first();
 
-        $messages =  Message::where('chat_id', $chat->id)->paginate(6);
-        dd($messages);
-
+        $messages =  Message::where('chat_id', $chat->id)->paginate(20);
         return response()->json($messages);
     }
 
