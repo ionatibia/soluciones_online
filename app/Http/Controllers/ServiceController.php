@@ -104,21 +104,20 @@ class ServiceController extends Controller
     {
         $service = Service::where('id', $id)->first();
 
-        if (auth()->id() === $service->owner) {
+        if (auth()->id() === $service->user_id) {
             $chats = Chat::where('service_id', $service->id)->get();
         } else {
             $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->get();
         }
-
         if ($chats) {
             foreach ($chats->all() as $chat) {
                 $user = User::where('id', $chat->user_id)->first();
-                $owner = User::where('id', $chat->owner)->first();
+                $owner = User::where('id', $chat->user_id)->first();
                 $chat->user_obj = $user;
                 $chat->owner_obj = $owner;
             }
         } else {
-            $chats = [null];
+            $chats = collect();
         }
 
         return view('services.detail', [
@@ -175,7 +174,15 @@ class ServiceController extends Controller
     {
         $chat = Chat::find($id)->first();
 
-        $messages =  Message::where('chat_id', $chat->id)->paginate(20);
+        $messages =  Message::where('chat_id', $chat->id)->paginate(10);
+        if ($messages) {
+            foreach ($messages->all() as $message) {
+                $from = User::where('id', $message->from)->first();
+                $to = User::where('id', $message->to)->first();
+                $message->from_obj = $from;
+                $message->to_obj = $to;
+            }
+        }
         return response()->json($messages);
     }
 
@@ -200,7 +207,7 @@ class ServiceController extends Controller
             'from' => auth()->id(),
             'read' => false
         ]);
-        $message->servicio_id = 1;
+        /* $message->servicio_id = 1; */
         SendMessage::dispatch($message);
 
         return response()->json([

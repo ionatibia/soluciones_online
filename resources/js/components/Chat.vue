@@ -1,11 +1,71 @@
 <template>
     <div>
         <div v-if="messages" class="row">
-            {{ messages.length }}
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="chat">
+                    <div
+                        v-for="(message, m) in messages"
+                        :key="m"
+                        :class="
+                            message.from_obj.id === user.id
+                                ? 'myMessage message'
+                                : 'othersMessage message'
+                        "
+                    >
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <img
+                                    class="rounded-circle"
+                                    width="40"
+                                    height="40"
+                                    :src="message.from_obj.avatar"
+                                    alt="avatar"
+                                />
+                            </div>
+                            <div class="col-md-9 text-left">
+                                <span>{{ message.text }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group mb-3">
+                    <input
+                        type="text"
+                        class="form-control mb-3"
+                        v-model="text"
+                        placeholder="Message..."
+                    />
+                    <div class="input-group-append">
+                        <button
+                            class="btn btn-outline-primary"
+                            @click="sendMessage()"
+                            :disabled="text === ''"
+                        >
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
         </div>
-        <div class="row">
-            <input type="text" v-model="text" />
-            <button class="btn btn-primary" @click="sendMessage()">Send</button>
+        <div v-else>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="progress">
+                        <div
+                            class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar"
+                            aria-valuenow="100"
+                            aria-valuemin=""
+                            aria-valuemax="100"
+                            style="width: 100%"
+                        ></div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
         </div>
     </div>
 </template>
@@ -18,6 +78,7 @@ export default {
             text: "",
             messages: null,
             pagination_data: null,
+            local_chat: null,
         };
     },
     props: {
@@ -34,8 +95,9 @@ export default {
             default: null,
         },
     },
-    async beforeMount() {
-        if (this.chat) {
+    async mounted() {
+        this.local_chat = this.chat;
+        if (this.local_chat) {
             this.connect();
         }
         await this.getMessages();
@@ -44,24 +106,25 @@ export default {
         async sendMessage() {
             const self = this;
             if (self.user.id === self.service.user_id) {
-                self.to = self.chat.user_id;
+                self.to = self.local_chat.user_id;
             } else {
                 self.to = self.service.user_id;
             }
+            const message = self.text;
+            self.text = "";
             try {
                 await axios
                     .post("/message", {
-                        text: self.text,
+                        text: message,
                         to: self.to,
-                        chat_id: self.chat ? self.chat.id : null,
+                        chat_id: self.local_chat ? self.local_chat.id : null,
                         service_id: self.service.id,
                     })
                     .then(async (res) => {
-                        if (!self.chat) {
-                            self.chat = res.data.chat;
+                        if (!self.local_chat) {
+                            self.local_chat = res.data.chat;
                             self.connect();
                         }
-                        /* await self.getMessages(); */
                     });
             } catch (error) {
                 console.log(error);
@@ -69,8 +132,8 @@ export default {
         },
         async getMessages() {
             const self = this;
-            if (!self.chat) return;
-            const response = await axios.get("/messages/" + self.chat.id);
+            if (!self.local_chat) return;
+            const response = await axios.get("/messages/" + self.local_chat.id);
             if (response.status === 200) {
                 self.messages = response.data.data;
                 delete response.data.data;
@@ -79,7 +142,7 @@ export default {
         },
         connect() {
             const self = this;
-            Echo.private("servicios." + this.chat.id).listen(
+            Echo.private("servicios." + this.local_chat.id).listen(
                 "GotMessage",
                 async (e) => {
                     console.log(e);
@@ -92,4 +155,21 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.myMessage {
+    /* text-align: right; */
+    /* color: green; */
+    background-color: aquamarine;
+}
+.othersMessage {
+    /* text-align: left; */
+    /* color: grey; */
+    background-color: rgb(194, 194, 194);
+}
+.message {
+    border: 1px solid rgb(153, 153, 153);
+    border-radius: 15px;
+    padding: 8px;
+    margin: 9px auto 8px auto;
+}
+</style>

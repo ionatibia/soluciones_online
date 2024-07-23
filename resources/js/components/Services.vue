@@ -80,6 +80,9 @@
                     </div>
                 </div>
             </div>
+            <div v-if="services && services.length === 0 && onlymine">
+                No services, please create one
+            </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-12 text-center">
