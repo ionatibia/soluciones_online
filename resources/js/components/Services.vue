@@ -41,7 +41,16 @@
                 </div>
                 <div class="card-footer">
                     <div class="row my-2">
-                        <div v-if="onlymine" class="col-md-4 text-center">
+                        <div
+                            v-if="onlymine || user.role === 'admin'"
+                            :class="
+                                onlymine
+                                    ? 'col-md-4 text-center'
+                                    : user.role === 'admin'
+                                    ? 'col-md-6 text-center'
+                                    : ''
+                            "
+                        >
                             <button
                                 type="button"
                                 class="btn btn-danger"
@@ -65,13 +74,19 @@
                             :class="
                                 onlymine
                                     ? 'col-md-4 text-center'
+                                    : user.role === 'admin'
+                                    ? 'col-md-6 text-center'
                                     : 'col-md-12 text-center'
                             "
                         >
                             <button
                                 type="button"
                                 class="btn btn-primary"
-                                :style="onlymine ? 'width: 80%' : 'width: 50%'"
+                                :style="
+                                    onlymine || user.role === 'admin'
+                                        ? 'width: 80%'
+                                        : 'width: 50%'
+                                "
                                 @click="goToDetail(item)"
                             >
                                 <i class="bi bi-three-dots h4"></i>
@@ -152,6 +167,10 @@ export default {
         onlymine: {
             type: Boolean,
             default: true,
+        },
+        user: {
+            type: Object,
+            default: null,
         },
     },
     data() {

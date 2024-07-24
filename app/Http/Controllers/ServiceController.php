@@ -37,7 +37,12 @@ class ServiceController extends Controller
 
     public function getServices()
     {
-        $services = Service::where('is_published', 1)->paginate(6);
+        if (auth()->user()->role === 'admin') {
+            $services = Service::orderBy('created_at', 'desc')->paginate(6);
+        } else {
+            $services = Service::where('is_published', 1)->orderBy('created_at', 'desc')->paginate(6);
+        }
+
         return response()->json($services);
     }
 
@@ -58,7 +63,7 @@ class ServiceController extends Controller
      */
     public function getMyServices(): JsonResponse
     {
-        $services = Service::where('user_id', auth()->id())->paginate(6);
+        $services = Service::where('user_id', auth()->id())->orderBy('created_at', 'desc')->paginate(6);
         return response()->json($services);
     }
 
@@ -107,9 +112,9 @@ class ServiceController extends Controller
         $service = Service::where('id', $id)->first();
 
         if (auth()->id() === $service->user_id) {
-            $chats = Chat::where('service_id', $service->id)->get();
+            $chats = Chat::where('service_id', $service->id)->orderBy('created_at', 'desc')->get();
         } else {
-            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->get();
+            $chats = Chat::where('service_id', $service->id)->where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
         }
         if ($chats) {
             foreach ($chats->all() as $chat) {
@@ -176,7 +181,7 @@ class ServiceController extends Controller
     {
         $chat = Chat::where('id', $id)->first();
 
-        $messages =  Message::where('chat_id', $chat->id)->paginate(6);
+        $messages =  Message::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->paginate(6);
         if ($messages) {
             foreach ($messages->all() as $message) {
                 $from = User::where('id', $message->from)->first();

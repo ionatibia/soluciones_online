@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
             'username' => 'TestUser2',
             'email' => 'test2@test.com',
             'role' => 'user',
-            'avatar' => '/assets/avatars/Testuser2.avif',
+            'avatar' => '/assets/avatars/Testuser2.jpg',
             'password' => Hash::make('12345678')
         ]);
 
@@ -58,7 +58,7 @@ class UserSeeder extends Seeder
             'username' => 'TestUser3',
             'email' => 'test3@test.com',
             'role' => 'user',
-            'avatar' => '/assets/avatars/default.avif',
+            'avatar' => '/assets/avatars/default.jpg',
             'password' => Hash::make('12345678')
         ]);
     }
