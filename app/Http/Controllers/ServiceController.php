@@ -176,7 +176,7 @@ class ServiceController extends Controller
     {
         $chat = Chat::where('id', $id)->first();
 
-        $messages =  Message::where('chat_id', $chat->id)->paginate(10);
+        $messages =  Message::where('chat_id', $chat->id)->paginate(6);
         if ($messages) {
             foreach ($messages->all() as $message) {
                 $from = User::where('id', $message->from)->first();
@@ -211,7 +211,7 @@ class ServiceController extends Controller
             'from' => auth()->id(),
             'read' => false
         ]);
-        if ($send) NewChat::dispatch($chat, $message);
+        if ($send) NewChat::dispatch($chat, $service, $message);
         SendMessage::dispatch($message);
 
         return response()->json([

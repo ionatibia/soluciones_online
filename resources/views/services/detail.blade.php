@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-12 title text-primary">
                                 {{ $service->title }}
                             </div>
                         </div>
@@ -30,8 +30,8 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-md-12 text-center">
-                                <div class="mb-3 text-center">
-                                    {{ $service->price }}
+                                <div class="mb-3 text-center price">
+                                    {{ $service->price }} $
                                 </div>
                             </div>
                         </div>

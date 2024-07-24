@@ -10,7 +10,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5
-                                class="card-title text-primary font-weight-bold"
+                                class="card-title text-primary font-weight-bold title"
                             >
                                 {{ item.title }}
                             </h5>
@@ -37,7 +37,7 @@
                             {{ item.description.slice(0, 255) + "..." }}
                         </p>
                     </div>
-                    <div>{{ item.price }}</div>
+                    <div class="price text-center">{{ item.price }} $</div>
                 </div>
                 <div class="card-footer">
                     <div class="row my-2">
