@@ -24,9 +24,12 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 @auth
-                    <a class="navbar-brand" href="{{ url('/') }}">
-                        {{ 'My Services' }}
-                    </a>
+                    @if (Auth::user()->role !== 'admin')
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            {{ 'My Services' }}
+                        </a>
+                    @endif
+
                     <a class="navbar-brand" href="{{ url('/services') }}">
                         {{ 'All Services' }}
                     </a>

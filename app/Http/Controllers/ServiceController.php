@@ -53,7 +53,11 @@ class ServiceController extends Controller
      */
     public function home()
     {
-        return view('home');
+        if (auth()->user()->role === 'admin') {
+            return $this->services();
+        } else {
+            return view('home');
+        }
     }
 
     /**
