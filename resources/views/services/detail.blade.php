@@ -58,11 +58,31 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-12 text-center">
+                            <div class="col-md-12">
                                 @if (Auth::user()->id === $service->user_id)
-                                    <chat :chat="{{ count($chats) ? $chats[0] : null }}" :service="{{ $service }}"
-                                        :user="{{ Auth::user() }}">
-                                    </chat>
+                                    <div class="accordion" id="accordion">
+                                        @forelse ($chats as $chat)
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse" data-bs-target="{{ '#' . $chat->id }}"
+                                                        aria-expanded="true" aria-controls="{{ $chat->id }}">
+                                                        {{ $chat->user_obj->username }}
+                                                    </button>
+                                                </h2>
+                                                <div id="{{ $chat->id }}" class="accordion-collapse collapse"
+                                                    aria-labelledby="headingOne" data-bs-parent="#accordion">
+                                                    <div class="accordion-body">
+                                                        <chat :chat="{{ $chat }}" :service="{{ $service }}"
+                                                            :user="{{ Auth::user() }}">
+                                                        </chat>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @empty
+                                            <h5>No chats</h5>
+                                        @endforelse
+                                    </div>
                                 @else
                                     <chat :chat="{{ count($chats) ? $chats[0] : null }}" :service="{{ $service }}"
                                         :user="{{ Auth::user() }}">
@@ -75,5 +95,5 @@
             </div>
         </div>
     </div>
+
 @endsection
-{{-- Auth::user()->name  --}}

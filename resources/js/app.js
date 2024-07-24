@@ -17,8 +17,10 @@ const app = createApp({});
 
 import ServicesComponent from './components/Services.vue';
 import ChatComponent from './components/Chat.vue';
+import NotificationsComponent from './components/Notifications.vue';
 app.component('services',ServicesComponent);
 app.component('chat',ChatComponent);
+app.component('notifications',NotificationsComponent);
 
 /**
  * The following block of code may be used to automatically register your

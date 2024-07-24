@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="messages" class="row">
+        <div v-if="messages !== null" class="row">
             <div class="col-md-4"></div>
             <div class="col-md-4">
                 <div class="chat">
@@ -13,8 +13,11 @@
                                 : 'othersMessage message'
                         "
                     >
-                        <div class="row">
-                            <div class="col-md-3 text-center">
+                        <div v-if="message.from_obj.id === user.id" class="row">
+                            <div class="col-md-10 text-start">
+                                <span>{{ message.text }}</span>
+                            </div>
+                            <div class="col-md-2 text-center">
                                 <img
                                     class="rounded-circle"
                                     width="40"
@@ -23,8 +26,44 @@
                                     alt="avatar"
                                 />
                             </div>
-                            <div class="col-md-9 text-left">
+                        </div>
+                        <div v-else class="row">
+                            <div class="col-md-2 text-center">
+                                <img
+                                    class="rounded-circle"
+                                    width="40"
+                                    height="40"
+                                    :src="message.from_obj.avatar"
+                                    alt="avatar"
+                                />
+                            </div>
+                            <div class="col-md-10 text-start">
                                 <span>{{ message.text }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="sending" class="myMessage message">
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <img
+                                    class="rounded-circle"
+                                    width="40"
+                                    height="40"
+                                    src="/assets/avatars/default.jpg"
+                                    alt="avatar"
+                                />
+                            </div>
+                            <div class="col-md-10 text-start">
+                                <div class="progress">
+                                    <div
+                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar"
+                                        aria-valuenow="100"
+                                        aria-valuemin=""
+                                        aria-valuemax="100"
+                                        style="width: 100%"
+                                    ></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -79,6 +118,7 @@ export default {
             messages: null,
             pagination_data: null,
             local_chat: null,
+            sending: false,
         };
     },
     props: {
@@ -104,6 +144,7 @@ export default {
     },
     methods: {
         async sendMessage() {
+            this.sending = true;
             const self = this;
             if (self.user.id === self.service.user_id) {
                 self.to = self.local_chat.user_id;
@@ -132,8 +173,13 @@ export default {
         },
         async getMessages() {
             const self = this;
-            if (!self.local_chat) return;
+            if (!self.local_chat) {
+                self.messages = [];
+                return;
+            }
+            console.log(self.local_chat.id);
             const response = await axios.get("/messages/" + self.local_chat.id);
+            self.sending = false;
             if (response.status === 200) {
                 self.messages = response.data.data;
                 delete response.data.data;
@@ -145,7 +191,6 @@ export default {
             Echo.private("servicios." + this.local_chat.id).listen(
                 "GotMessage",
                 async (e) => {
-                    console.log(e);
                     self.text = "";
                     await self.getMessages();
                 }

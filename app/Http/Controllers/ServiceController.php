@@ -8,6 +8,8 @@ use App\Models\Service;
 use App\Models\User;
 use App\Models\Message;
 use App\Jobs\SendMessage;
+use App\Events\NewCha;
+use App\Events\NewChat;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 
@@ -172,7 +174,7 @@ class ServiceController extends Controller
 
     public function messages($id): JsonResponse
     {
-        $chat = Chat::find($id)->first();
+        $chat = Chat::where('id', $id)->first();
 
         $messages =  Message::where('chat_id', $chat->id)->paginate(10);
         if ($messages) {
@@ -188,6 +190,7 @@ class ServiceController extends Controller
 
     public function message(Request $request): JsonResponse
     {
+        $send = false;
         $chat_id = $request->get('chat_id');
         if ($chat_id === null) {
             $service = Service::where('id', $request->get('service_id'))->first();
@@ -197,6 +200,7 @@ class ServiceController extends Controller
                 'user_id' => auth()->id()
             ]);
             $chat_id = $chat->id;
+            $send = true;
         } else {
             $chat = Chat::where('id', $chat_id);
         }
@@ -207,7 +211,7 @@ class ServiceController extends Controller
             'from' => auth()->id(),
             'read' => false
         ]);
-        /* $message->servicio_id = 1; */
+        if ($send) NewChat::dispatch($chat, $message);
         SendMessage::dispatch($message);
 
         return response()->json([
